@@ -4,9 +4,6 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>4K Wallpapers - Premium HD Wallpapers</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.39.0/+esm"></script>
-    <link rel="icon" type="image/png" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 256 256'%3E%3Crect fill='%23000' width='256' height='256' rx='60'/%3E%3Ctext x='128' y='160' font-size='100' font-weight='bold' text-anchor='middle' fill='white'%3E4%3C/text%3E%3Ccircle cx='200' cy='60' r='25' fill='%231e40af'/%3E%3C/svg%3E">
     <style>
         * {
             margin: 0;
@@ -14,90 +11,204 @@
             box-sizing: border-box;
         }
         
-        body {
-            background: #ffffff;
-            color: #1f2937;
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+        :root {
+            --primary-color: #3b82f6;
+            --secondary-color: #1f2937;
+            --light-bg: #ffffff;
+            --light-gray: #f3f4f6;
+            --border-color: #e5e7eb;
+            --text-dark: #1f2937;
+            --text-light: #6b7280;
         }
         
+        body {
+            background: var(--light-bg);
+            color: var(--text-dark);
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            line-height: 1.6;
+        }
+
+        /* Header Styles */
+        header {
+            background: var(--light-bg);
+            border-bottom: 1px solid var(--border-color);
+            position: sticky;
+            top: 0;
+            z-index: 50;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+        }
+
+        .header-container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 1rem 1.5rem;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 1.5rem;
+            flex-wrap: wrap;
+        }
+
+        .logo-section {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            cursor: pointer;
+            text-decoration: none;
+            color: var(--text-dark);
+        }
+
         .logo-icon {
             width: 45px;
             height: 45px;
-            display: inline-block;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: linear-gradient(135deg, #000 0%, #333 100%);
+            border-radius: 12px;
+            font-size: 28px;
+            font-weight: bold;
+            color: white;
+            position: relative;
         }
 
-        /* Pinterest-style masonry grid */
+        .logo-icon::after {
+            content: '';
+            position: absolute;
+            width: 12px;
+            height: 12px;
+            background: var(--primary-color);
+            border-radius: 50%;
+            top: 8px;
+            right: 8px;
+        }
+
+        .logo-text {
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: var(--text-dark);
+        }
+
+        .search-container {
+            flex: 1;
+            max-width: 400px;
+        }
+
+        #searchInput {
+            width: 100%;
+            padding: 0.75rem 1rem;
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+        }
+
+        #searchInput:focus {
+            outline: none;
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+        }
+
+        .nav-menu {
+            display: flex;
+            gap: 2rem;
+            align-items: center;
+        }
+
+        .nav-link {
+            text-decoration: none;
+            color: var(--text-light);
+            font-weight: 500;
+            transition: color 0.3s ease;
+            cursor: pointer;
+            border: none;
+            background: none;
+            font-size: 1rem;
+        }
+
+        .nav-link:hover,
+        .nav-link.active {
+            color: var(--primary-color);
+        }
+
+        /* Main Container */
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 0 1.5rem;
+        }
+
+        /* Masonry Grid */
         .posts-grid {
-            column-count: 5;
-            column-gap: 1.5rem;
-            padding: 2rem;
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+            gap: 1.5rem;
+            padding: 2rem 1.5rem;
+            animation: fadeIn 0.5s ease-in;
         }
 
-        @media (max-width: 1400px) {
-            .posts-grid {
-                column-count: 4;
-            }
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
         }
+
         @media (max-width: 1024px) {
             .posts-grid {
-                column-count: 3;
+                grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
             }
         }
+
         @media (max-width: 768px) {
             .posts-grid {
-                column-count: 2;
-            }
-        }
-        @media (max-width: 512px) {
-            .posts-grid {
-                column-count: 1;
+                grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+                gap: 1rem;
                 padding: 1rem;
             }
         }
 
+        /* Post Card */
         .post-card {
-            background: #ffffff;
+            background: var(--light-bg);
             border-radius: 12px;
             overflow: hidden;
-            border: 1px solid #e5e7eb;
+            border: 1px solid var(--border-color);
             transition: all 0.3s ease;
-            margin-bottom: 1.5rem;
-            break-inside: avoid;
             cursor: pointer;
-            position: relative;
             display: flex;
             flex-direction: column;
+            height: 100%;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
         }
 
         .post-card:hover {
             box-shadow: 0 12px 40px rgba(0, 0, 0, 0.15);
-            transform: translateY(-4px);
-            border-color: #3b82f6;
+            transform: translateY(-6px);
+            border-color: var(--primary-color);
         }
 
         .post-image-wrapper {
             position: relative;
             overflow: hidden;
-            background: #f3f4f6;
+            background: linear-gradient(135deg, var(--light-gray) 0%, #e0e7ff 100%);
             width: 100%;
-            min-height: 200px;
+            height: 200px;
         }
 
         .post-image {
             width: 100%;
             height: 100%;
             object-fit: cover;
-            transition: transform 0.3s ease;
+            transition: transform 0.4s ease;
         }
 
         .post-card:hover .post-image {
-            transform: scale(1.05);
+            transform: scale(1.08);
         }
 
         .post-overlay {
             position: absolute;
             inset: 0;
-            background: linear-gradient(to bottom, rgba(0,0,0,0) 0%, rgba(0,0,0,0.5) 100%);
+            background: linear-gradient(to bottom, rgba(0,0,0,0) 0%, rgba(0,0,0,0.6) 100%);
             opacity: 0;
             transition: opacity 0.3s ease;
             display: flex;
@@ -109,11 +220,10 @@
             opacity: 1;
         }
 
-        .post-title-overlay {
+        .post-overlay-text {
             color: white;
             font-weight: 600;
-            font-size: 0.95rem;
-            line-height: 1.4;
+            font-size: 0.9rem;
         }
 
         .post-info {
@@ -124,32 +234,26 @@
             flex-grow: 1;
         }
 
+        .post-category {
+            font-size: 0.7rem;
+            color: var(--primary-color);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            font-weight: 700;
+        }
+
         .post-title {
             font-size: 0.95rem;
             font-weight: 600;
-            color: #1f2937;
-            line-height: 1.4;
-            overflow: hidden;
-            text-overflow: ellipsis;
+            color: var(--text-dark);
+            line-height: 1.3;
             display: -webkit-box;
             -webkit-line-clamp: 2;
             -webkit-box-orient: vertical;
+            overflow: hidden;
         }
 
-        .post-category {
-            font-size: 0.75rem;
-            color: #3b82f6;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-            font-weight: 600;
-        }
-
-        .post-meta {
-            font-size: 0.75rem;
-            color: #9ca3af;
-        }
-
-        /* Modal Styles */
+        /* Modal */
         .modal {
             display: none;
             position: fixed;
@@ -162,6 +266,7 @@
             align-items: center;
             justify-content: center;
             padding: 1rem;
+            overflow-y: auto;
         }
 
         .modal.active {
@@ -170,17 +275,29 @@
 
         .modal-content {
             position: relative;
-            max-width: 90vw;
-            max-height: 90vh;
+            width: 100%;
+            max-width: 900px;
             background: white;
             border-radius: 16px;
             overflow: hidden;
             display: grid;
-            grid-template-columns: 1fr 400px;
-            gap: 0;
+            grid-template-columns: 1.2fr 1fr;
+            max-height: 80vh;
+            animation: slideUp 0.3s ease;
         }
 
-        @media (max-width: 1024px) {
+        @keyframes slideUp {
+            from {
+                transform: translateY(50px);
+                opacity: 0;
+            }
+            to {
+                transform: translateY(0);
+                opacity: 1;
+            }
+        }
+
+        @media (max-width: 768px) {
             .modal-content {
                 grid-template-columns: 1fr;
                 max-height: 90vh;
@@ -191,7 +308,7 @@
             display: flex;
             align-items: center;
             justify-content: center;
-            background: #f9fafb;
+            background: linear-gradient(135deg, var(--light-gray) 0%, #f9fafb 100%);
             position: relative;
             min-height: 400px;
         }
@@ -206,40 +323,48 @@
         .modal-info-section {
             padding: 2rem;
             overflow-y: auto;
-            max-height: 90vh;
-            background: white;
+            max-height: 80vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+        }
+
+        .modal-header {
+            margin-bottom: 1.5rem;
+        }
+
+        .modal-category-badge {
+            display: inline-block;
+            background: rgba(59, 130, 246, 0.1);
+            color: var(--primary-color);
+            padding: 0.5rem 1rem;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            margin-bottom: 0.75rem;
         }
 
         .modal-title {
-            font-size: 1.5rem;
+            font-size: 1.75rem;
             font-weight: 700;
-            color: #1f2937;
-            margin-bottom: 1rem;
-        }
-
-        .modal-category {
-            display: inline-block;
-            background: #eff6ff;
-            color: #3b82f6;
-            padding: 0.5rem 1rem;
-            border-radius: 20px;
-            font-size: 0.85rem;
-            font-weight: 600;
-            margin-bottom: 1rem;
+            color: var(--text-dark);
+            margin-bottom: 0.5rem;
+            line-height: 1.2;
         }
 
         .modal-description {
-            color: #6b7280;
+            color: var(--text-light);
             line-height: 1.6;
             margin-bottom: 1.5rem;
             font-size: 0.95rem;
         }
 
         .modal-meta {
-            border-top: 1px solid #e5e7eb;
+            border-top: 1px solid var(--border-color);
             padding-top: 1rem;
             font-size: 0.85rem;
-            color: #9ca3af;
+            color: var(--text-light);
         }
 
         .close-modal {
@@ -266,40 +391,32 @@
             transform: scale(1.1);
         }
 
+        /* Loading State */
         .loading-skeleton {
-            background: linear-gradient(90deg, #f3f4f6 25%, #e5e7eb 50%, #f3f4f6 75%);
+            background: linear-gradient(90deg, var(--light-gray) 25%, #e0e7ff 50%, var(--light-gray) 75%);
             background-size: 200% 100%;
-            animation: loading 1.5s infinite;
+            animation: shimmer 2s infinite;
         }
 
-        @keyframes loading {
+        @keyframes shimmer {
             0% { background-position: 200% 0; }
             100% { background-position: -200% 0; }
         }
 
+        /* No Posts State */
         .no-posts {
             text-align: center;
             padding: 4rem 2rem;
-            color: #9ca3af;
+            color: var(--text-light);
             grid-column: 1 / -1;
         }
 
-        /* Navigation */
-        nav a {
-            text-decoration: none;
-            transition: color 0.2s;
+        .no-posts-icon {
+            font-size: 3rem;
+            margin-bottom: 1rem;
         }
 
-        nav a:hover {
-            color: #3b82f6;
-        }
-
-        nav a.active {
-            color: #3b82f6;
-            font-weight: 600;
-        }
-
-        /* Page sections */
+        /* Page Sections */
         .page-section {
             display: none;
         }
@@ -307,159 +424,266 @@
         .page-section.active {
             display: block;
         }
+
+        /* About Page */
+        .about-page {
+            padding: 3rem 1.5rem;
+        }
+
+        .about-card {
+            background: white;
+            border-radius: 16px;
+            border: 1px solid var(--border-color);
+            padding: 2rem;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
+        }
+
+        .about-header {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            margin-bottom: 2rem;
+            padding-bottom: 2rem;
+            border-bottom: 2px solid var(--border-color);
+        }
+
+        .about-header .logo-icon {
+            width: 60px;
+            height: 60px;
+            font-size: 36px;
+        }
+
+        .about-header h1 {
+            font-size: 2rem;
+            color: var(--text-dark);
+        }
+
+        .about-section {
+            margin-bottom: 2rem;
+        }
+
+        .about-section h2 {
+            font-size: 1.25rem;
+            color: var(--text-dark);
+            margin-bottom: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .about-section p {
+            color: var(--text-light);
+            line-height: 1.8;
+            margin-bottom: 1rem;
+        }
+
+        .about-section ul {
+            list-style: none;
+            padding-left: 0;
+        }
+
+        .about-section li {
+            color: var(--text-light);
+            padding-left: 1.5rem;
+            position: relative;
+            margin-bottom: 0.5rem;
+            line-height: 1.6;
+        }
+
+        .about-section li:before {
+            content: '\u2713';
+            position: absolute;
+            left: 0;
+            color: var(--primary-color);
+            font-weight: bold;
+        }
+
+        .setup-box {
+            background: linear-gradient(135deg, #eff6ff 0%, #f0f9ff 100%);
+            border-left: 4px solid var(--primary-color);
+            padding: 1.5rem;
+            border-radius: 8px;
+            margin: 1.5rem 0;
+        }
+
+        .setup-box h3 {
+            color: var(--primary-color);
+            margin-bottom: 0.75rem;
+            font-size: 1rem;
+        }
+
+        .setup-box ol {
+            margin-left: 1.5rem;
+            color: var(--text-light);
+            font-size: 0.95rem;
+            line-height: 1.8;
+        }
+
+        .setup-box li {
+            margin-bottom: 0.5rem;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .header-container {
+                flex-direction: column;
+                gap: 1rem;
+            }
+
+            .search-container {
+                width: 100%;
+                max-width: 100%;
+            }
+
+            .nav-menu {
+                gap: 1rem;
+                width: 100%;
+                justify-content: space-around;
+            }
+
+            .modal-content {
+                grid-template-columns: 1fr;
+            }
+
+            .modal-image-section {
+                min-height: 300px;
+            }
+
+            .modal-info-section {
+                padding: 1.5rem;
+            }
+
+            .about-card {
+                padding: 1.5rem;
+            }
+
+            .about-header {
+                flex-direction: column;
+                text-align: center;
+            }
+        }
     </style>
 </head>
 <body>
     <!-- Header -->
-    <header class="bg-white border-b border-gray-200 sticky top-0 z-50">
-        <div class="max-w-7xl mx-auto px-4 py-4 flex items-center justify-between gap-6">
-            <a href="#home" class="flex items-center gap-3 nav-link" data-page="home">
-                <svg class="logo-icon" viewBox="0 0 256 256" xmlns="http://www.w3.org/2000/svg">
-                    <rect fill="#000" width="256" height="256" rx="60"/>
-                    <text x="128" y="160" font-size="100" font-weight="bold" text-anchor="middle" fill="white">4</text>
-                    <circle cx="200" cy="60" r="25" fill="#1e40af"/>
-                </svg>
-                <h1 class="text-2xl font-bold text-gray-900">4K Wallpapers</h1>
+    <header>
+        <div class="header-container">
+            <a href="#" class="logo-section" id="logoLink" data-page="home">
+                <div class="logo-icon">4</div>
+                <span class="logo-text">4K Wallpapers</span>
             </a>
             
-            <div class="flex-1 max-w-md">
-                <input type="text" id="searchInput" placeholder="Search wallpapers..." 
-                    class="w-full px-4 py-2 border border-gray-300 rounded-lg text-gray-900 placeholder-gray-400 focus:border-blue-500 focus:ring-1 focus:ring-blue-500 focus:outline-none transition">
+            <div class="search-container">
+                <input type="text" id="searchInput" placeholder="Search wallpapers...">
             </div>
 
-            <nav class="flex items-center gap-6">
-                <a href="#home" data-page="home" class="nav-link active text-gray-900 hover:text-blue-600 font-medium transition">Home</a>
-                <a href="#about" data-page="about" class="nav-link text-gray-600 hover:text-blue-600 font-medium transition">About</a>
+            <nav class="nav-menu">
+                <button class="nav-link active" data-page="home">Home</button>
+                <button class="nav-link" data-page="about">About</button>
             </nav>
         </div>
     </header>
 
     <!-- Home Page -->
     <main id="home" class="page-section active">
-        <div id="postsGrid" class="posts-grid">
-            <!-- Posts will be loaded here -->
-            <div class="post-card loading-skeleton" style="height: 300px;"></div>
-            <div class="post-card loading-skeleton" style="height: 350px;"></div>
-            <div class="post-card loading-skeleton" style="height: 280px;"></div>
-            <div class="post-card loading-skeleton" style="height: 320px;"></div>
-            <div class="post-card loading-skeleton" style="height: 300px;"></div>
-        </div>
-        <div id="noPosts" class="no-posts" style="display: none;">
-            <p class="text-lg">No wallpapers found</p>
+        <div class="container">
+            <div id="postsGrid" class="posts-grid">
+                <!-- Posts loaded here -->
+            </div>
+            <div id="noPosts" class="no-posts" style="display: none;">
+                <div class="no-posts-icon">🎨</div>
+                <p>No wallpapers found. Try a different search!</p>
+            </div>
         </div>
     </main>
 
     <!-- About Page -->
-    <section id="about" class="page-section max-w-4xl mx-auto px-4 py-12">
-        <div class="bg-white rounded-lg border border-gray-200 p-8">
-            <div class="flex items-center gap-4 mb-8">
-                <svg class="logo-icon" viewBox="0 0 256 256" xmlns="http://www.w3.org/2000/svg">
-                    <rect fill="#000" width="256" height="256" rx="60"/>
-                    <text x="128" y="160" font-size="100" font-weight="bold" text-anchor="middle" fill="white">4</text>
-                    <circle cx="200" cy="60" r="25" fill="#1e40af"/>
-                </svg>
-                <h1 class="text-3xl font-bold text-gray-900">About 4K Wallpapers</h1>
-            </div>
-
-            <div class="space-y-6 text-gray-700">
-                <p class="text-lg leading-relaxed">
-                    Welcome to <strong>4K Wallpapers</strong>, your premium destination for stunning high-resolution wallpapers. We curate the finest 4K images from around the world to inspire and beautify your devices.
-                </p>
-
-                <div>
-                    <h2 class="text-xl font-bold text-gray-900 mb-3">🎯 Our Mission</h2>
-                    <p>To provide you with the most beautiful, high-quality 4K wallpapers that transform your digital experience. Every image is carefully selected to ensure stunning visual quality.</p>
+    <section id="about" class="page-section about-page">
+        <div class="container">
+            <div class="about-card">
+                <div class="about-header">
+                    <div class="logo-icon">4</div>
+                    <h1>4K Wallpapers</h1>
                 </div>
 
-                <div>
-                    <h2 class="text-xl font-bold text-gray-900 mb-3">✨ Features</h2>
-                    <ul class="list-disc list-inside space-y-2">
-                        <li>📸 Premium 4K Resolution (3840x2160 and higher)</li>
-                        <li>🎨 Diverse Categories: Nature, Abstract, Space, Urban & more</li>
-                        <li>🔍 Intelligent Search & Filtering</li>
-                        <li>📱 Optimized for all devices and screen sizes</li>
-                        <li>⚡ Fast loading and performance</li>
-                        <li>💾 Easy to download and use</li>
+                <div class="about-section">
+                    <h2>🎨 Welcome</h2>
+                    <p>Welcome to <strong>4K Wallpapers</strong>, your premium destination for stunning high-resolution wallpapers. We curate the finest 4K images to inspire and beautify your devices.</p>
+                </div>
+
+                <div class="about-section">
+                    <h2>✨ Features</h2>
+                    <ul>
+                        <li>Premium 4K Resolution (3840x2160 and higher)</li>
+                        <li>Diverse Categories: Nature, Abstract, Space, Urban & more</li>
+                        <li>Smart Search & Filtering</li>
+                        <li>Optimized for all devices and screen sizes</li>
+                        <li>Fast loading and great performance</li>
+                        <li>Beautiful modern design</li>
                     </ul>
                 </div>
 
-                <div>
-                    <h2 class="text-xl font-bold text-gray-900 mb-3">📚 Setup Guide</h2>
-                    <p class="mb-4">Follow these steps to set up your own 4K Wallpapers website with Supabase:</p>
+                <div class="about-section">
+                    <h2>📚 Setup Guide</h2>
+                    <p>Follow these steps to set up your own 4K Wallpapers website:</p>
                     
-                    <div class="bg-gray-50 border border-gray-200 rounded-lg p-6 space-y-4">
-                        <div>
-                            <h3 class="font-bold text-gray-900 mb-2">Step 1: Create Supabase Project</h3>
-                            <ol class="list-decimal list-inside space-y-1 text-sm text-gray-600">
-                                <li>Go to <a href="https://supabase.com" target="_blank" class="text-blue-600 hover:underline">supabase.com</a></li>
-                                <li>Sign up and create a new project</li>
-                                <li>Choose your region and wait for the project to initialize</li>
-                            </ol>
-                        </div>
-
-                        <div>
-                            <h3 class="font-bold text-gray-900 mb-2">Step 2: Create Database Table</h3>
-                            <ol class="list-decimal list-inside space-y-1 text-sm text-gray-600">
-                                <li>Open your Supabase project dashboard</li>
-                                <li>Click <strong>SQL Editor</strong> in the left menu</li>
-                                <li>Click <strong>New Query</strong></li>
-                                <li>Copy & paste the SQL from <code class="bg-white px-2 py-1 rounded border border-gray-300">setup.sql</code> file</li>
-                                <li>Click <strong>Run</strong> to execute</li>
-                            </ol>
-                        </div>
-
-                        <div>
-                            <h3 class="font-bold text-gray-900 mb-2">Step 3: Get Your Credentials</h3>
-                            <ol class="list-decimal list-inside space-y-1 text-sm text-gray-600">
-                                <li>In Supabase dashboard, click <strong>Settings</strong> → <strong>API</strong></li>
-                                <li>Copy your <strong>Project URL</strong></li>
-                                <li>Copy your <strong>Anon Key</strong> (public key)</li>
-                            </ol>
-                        </div>
-
-                        <div>
-                            <h3 class="font-bold text-gray-900 mb-2">Step 4: Add Wallpapers</h3>
-                            <ol class="list-decimal list-inside space-y-1 text-sm text-gray-600">
-                                <li>Go to Supabase <strong>Table Editor</strong></li>
-                                <li>Open the <strong>wallpapers</strong> table</li>
-                                <li>Click <strong>Insert Row</strong></li>
-                                <li>Fill in: title, image_url, category, description</li>
-                                <li>Image URLs work from: Unsplash, Pexels, Pinterest, Pixabay</li>
-                            </ol>
-                        </div>
-
-                        <div>
-                            <h3 class="font-bold text-gray-900 mb-2">Step 5: Deploy to GitHub Pages</h3>
-                            <ol class="list-decimal list-inside space-y-1 text-sm text-gray-600">
-                                <li>Push all files to GitHub repository</li>
-                                <li>Go to repo <strong>Settings</strong> → <strong>Pages</strong></li>
-                                <li>Select <strong>main</strong> branch as source</li>
-                                <li>Your site is live! 🚀</li>
-                            </ol>
-                        </div>
+                    <div class="setup-box">
+                        <h3>Step 1: Create Supabase Project</h3>
+                        <ol>
+                            <li>Go to supabase.com and sign up</li>
+                            <li>Create a new project</li>
+                            <li>Choose your region and wait for initialization</li>
+                        </ol>
                     </div>
-                </div>
 
-                <div class="bg-blue-50 border border-blue-200 rounded-lg p-4">
-                    <p class="text-sm text-blue-900"><strong>💡 Tip:</strong> For best results, use high-quality image URLs (3840x2160 or higher). You can find great wallpapers on Unsplash, Pexels, or Pinterest!</p>
+                    <div class="setup-box">
+                        <h3>Step 2: Create Database Table</h3>
+                        <ol>
+                            <li>Open Supabase dashboard</li>
+                            <li>Click SQL Editor → New Query</li>
+                            <li>Copy the setup.sql file and paste it</li>
+                            <li>Click Run to execute</li>
+                        </ol>
+                    </div>
+
+                    <div class="setup-box">
+                        <h3>Step 3: Get Your Credentials</h3>
+                        <ol>
+                            <li>Go to Settings → API</li>
+                            <li>Copy your Project URL</li>
+                            <li>Copy your Anon Key</li>
+                        </ol>
+                    </div>
+
+                    <div class="setup-box">
+                        <h3>Step 4: Deploy to GitHub Pages</h3>
+                        <ol>
+                            <li>Push all files to GitHub</li>
+                            <li>Go to Settings → Pages</li>
+                            <li>Select main branch as source</li>
+                            <li>Your site is live! 🚀</li>
+                        </ol>
+                    </div>
                 </div>
             </div>
         </div>
     </section>
 
-    <!-- Post Modal -->
+    <!-- Modal -->
     <div id="postModal" class="modal">
         <div class="modal-content">
-            <button class="close-modal" onclick="closePostModal()">&times;</button>
+            <button class="close-modal" onclick="app.closeModal()">×</button>
             
             <div class="modal-image-section">
                 <img id="modalImage" class="modal-image" src="" alt="">
             </div>
             
             <div class="modal-info-section">
-                <div class="modal-category" id="modalCategory"></div>
-                <h2 class="modal-title" id="modalTitle"></h2>
-                <p class="modal-description" id="modalDescription"></p>
+                <div class="modal-header">
+                    <div class="modal-category-badge" id="modalCategory"></div>
+                    <h2 class="modal-title" id="modalTitle"></h2>
+                    <p class="modal-description" id="modalDescription"></p>
+                </div>
                 
                 <div class="modal-meta">
                     <p id="modalDate"></p>
@@ -469,155 +693,262 @@
     </div>
 
     <script>
-        // Supabase Configuration
-        const SUPABASE_URL = 'https://srdzebzqrtwnmuzsnhdz.supabase.co';
-        const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InNyZHplYnpxcnR3bm11enNuaGR6Iiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc4MDgxMjU2MCwiZXhwIjoyMDk2Mzg4NTYwfQ.jiAK-grCpzfQC2U4uPxHiaKeJsPXAhO7747PuC6dm-E';
-        
-        let supabase = null;
-        let allPosts = [];
+        // TypeScript-like JavaScript Application
+        class WallpaperApp {
+            constructor() {
+                this.supabaseUrl = 'https://srdzebzqrtwnmuzsnhdz.supabase.co';
+                this.supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InNyZHplYnpxcnR3bm11enNuaGR6Iiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc4MDgxMjU2MCwiZXhwIjoyMDk2Mzg4NTYwfQ.jiAK-grCpzfQC2U4uPxHiaKeJsPXAhO7747PuC6dm-E';
+                this.allWallpapers = [];
+                this.filteredWallpapers = [];
+                this.currentPage = 'home';
+                this.init();
+            }
 
-        // Initialize Supabase
-        async function initSupabase() {
-            const { createClient } = window.supabase;
-            supabase = createClient(SUPABASE_URL, SUPABASE_KEY);
-            loadPosts();
-        }
+            init() {
+                this.setupEventListeners();
+                this.loadWallpapers();
+            }
 
-        // Load posts from Supabase
-        async function loadPosts() {
-            if (!supabase) return;
-            
-            try {
-                const { data, error } = await supabase
-                    .from('wallpapers')
-                    .select('*')
-                    .order('created_at', { ascending: false });
-                
-                if (error) {
-                    console.error('Error loading posts:', error);
+            setupEventListeners() {
+                // Navigation
+                document.querySelectorAll('[data-page]').forEach(btn => {
+                    btn.addEventListener('click', (e) => {
+                        e.preventDefault();
+                        const page = e.target.getAttribute('data-page');
+                        if (page) this.navigateTo(page);
+                    });
+                });
+
+                // Search
+                const searchInput = document.getElementById('searchInput');
+                searchInput.addEventListener('input', (e) => {
+                    this.handleSearch(e.target.value);
+                });
+
+                // Modal close
+                document.getElementById('postModal').addEventListener('click', (e) => {
+                    if (e.target === document.getElementById('postModal')) {
+                        this.closeModal();
+                    }
+                });
+
+                // Keyboard shortcut
+                document.addEventListener('keydown', (e) => {
+                    if (e.key === 'Escape') this.closeModal();
+                });
+            }
+
+            async loadWallpapers() {
+                try {
+                    this.showLoadingState();
+                    const response = await fetch(
+                        `${this.supabaseUrl}/rest/v1/wallpapers?order=created_at.desc`,
+                        {
+                            headers: {
+                                'apikey': this.supabaseKey,
+                                'Content-Type': 'application/json',
+                            }
+                        }
+                    );
+
+                    if (!response.ok) {
+                        this.allWallpapers = this.getDemoWallpapers();
+                    } else {
+                        this.allWallpapers = await response.json();
+                        if (this.allWallpapers.length === 0) {
+                            this.allWallpapers = this.getDemoWallpapers();
+                        }
+                    }
+
+                    this.filteredWallpapers = [...this.allWallpapers];
+                    this.shuffleArray(this.filteredWallpapers);
+                    this.renderPosts();
+                } catch (error) {
+                    console.error('Error:', error);
+                    this.allWallpapers = this.getDemoWallpapers();
+                    this.filteredWallpapers = [...this.allWallpapers];
+                    this.shuffleArray(this.filteredWallpapers);
+                    this.renderPosts();
+                }
+            }
+
+            getDemoWallpapers() {
+                return [
+                    {
+                        id: 1,
+                        title: 'Mountain Sunrise',
+                        image_url: 'https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=3840&q=80',
+                        category: 'Nature',
+                        description: 'Beautiful mountain sunrise with golden light illuminating the peaks',
+                        created_at: new Date().toISOString()
+                    },
+                    {
+                        id: 2,
+                        title: 'Abstract Blue',
+                        image_url: 'https://images.unsplash.com/photo-1541961017774-22349e4a1262?w=3840&q=80',
+                        category: 'Abstract',
+                        description: 'Modern abstract design with stunning blue tones',
+                        created_at: new Date().toISOString()
+                    },
+                    {
+                        id: 3,
+                        title: 'Space Galaxy',
+                        image_url: 'https://images.unsplash.com/photo-1419242902214-272b3f66ee7a?w=3840&q=80',
+                        category: 'Space',
+                        description: 'Stunning galaxy view from deep space',
+                        created_at: new Date().toISOString()
+                    },
+                    {
+                        id: 4,
+                        title: 'Ocean Waves',
+                        image_url: 'https://images.unsplash.com/photo-1505142468610-359e7d316be0?w=3840&q=80',
+                        category: 'Nature',
+                        description: 'Peaceful ocean waves at sunset',
+                        created_at: new Date().toISOString()
+                    },
+                    {
+                        id: 5,
+                        title: 'Aurora Borealis',
+                        image_url: 'https://images.unsplash.com/photo-1444080748397-f442aa95c3e5?w=3840&q=80',
+                        category: 'Nature',
+                        description: 'Northern lights over snowy landscape',
+                        created_at: new Date().toISOString()
+                    },
+                    {
+                        id: 6,
+                        title: 'Forest Path',
+                        image_url: 'https://images.unsplash.com/photo-1441974231531-c6227db76b6e?w=3840&q=80',
+                        category: 'Nature',
+                        description: 'Serene forest path surrounded by tall trees',
+                        created_at: new Date().toISOString()
+                    },
+                    {
+                        id: 7,
+                        title: 'City Lights',
+                        image_url: 'https://images.unsplash.com/photo-1449824913935-59a10b8d2000?w=3840&q=80',
+                        category: 'Urban',
+                        description: 'Beautiful city skyline at night',
+                        created_at: new Date().toISOString()
+                    },
+                    {
+                        id: 8,
+                        title: 'Geometric Patterns',
+                        image_url: 'https://images.unsplash.com/photo-1541315564-a5b1c1d6b05c?w=3840&q=80',
+                        category: 'Abstract',
+                        description: 'Amazing geometric patterns and designs',
+                        created_at: new Date().toISOString()
+                    }
+                ];
+            }
+
+            showLoadingState() {
+                const grid = document.getElementById('postsGrid');
+                grid.innerHTML = Array(12).fill(0).map(() => 
+                    '<div class="post-card loading-skeleton" style="height: 250px;"></div>'
+                ).join('');
+            }
+
+            shuffleArray(array) {
+                for (let i = array.length - 1; i > 0; i--) {
+                    const j = Math.floor(Math.random() * (i + 1));
+                    [array[i], array[j]] = [array[j], array[i]];
+                }
+            }
+
+            renderPosts() {
+                const grid = document.getElementById('postsGrid');
+                const noPosts = document.getElementById('noPosts');
+
+                if (this.filteredWallpapers.length === 0) {
+                    grid.innerHTML = '';
+                    noPosts.style.display = 'block';
                     return;
                 }
-                
-                allPosts = data || [];
-                // Shuffle for Pinterest-like algorithm
-                shuffleArray(allPosts);
-                renderPosts(allPosts);
-            } catch (err) {
-                console.error('Error:', err);
-            }
-        }
 
-        // Fisher-Yates shuffle (Pinterest-style algorithm)
-        function shuffleArray(array) {
-            for (let i = array.length - 1; i > 0; i--) {
-                const j = Math.floor(Math.random() * (i + 1));
-                [array[i], array[j]] = [array[j], array[i]];
-            }
-        }
+                noPosts.style.display = 'none';
+                grid.innerHTML = this.filteredWallpapers.map(wp => this.createPostCard(wp)).join('');
 
-        // Render posts to grid
-        function renderPosts(posts) {
-            const grid = document.getElementById('postsGrid');
-            const noPosts = document.getElementById('noPosts');
-            
-            if (posts.length === 0) {
-                grid.innerHTML = '';
-                noPosts.style.display = 'block';
-                return;
-            }
-            
-            noPosts.style.display = 'none';
-            grid.innerHTML = posts.map(post => `
-                <div class="post-card" onclick="openPostModal(${JSON.stringify(post).replace(/"/g, '&quot;')})">
-                    <div class="post-image-wrapper">
-                        <img src="${post.image_url}" alt="${escapeHtml(post.title)}" class="post-image" 
-                            onerror="this.src='data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 400 300%22%3E%3Crect fill=%22%23f3f4f6%22 width=%22400%22 height=%22300%22/%3E%3C/svg%3E'">
-                        <div class="post-overlay">
-                            <p class="post-title-overlay">${escapeHtml(post.title)}</p>
-                        </div>
-                    </div>
-                    <div class="post-info">
-                        <div>
-                            <p class="post-category">${escapeHtml(post.category)}</p>
-                            <p class="post-title">${escapeHtml(post.title)}</p>
-                        </div>
-                    </div>
-                </div>
-            `).join('');
-        }
-
-        // Escape HTML to prevent XSS
-        function escapeHtml(text) {
-            const div = document.createElement('div');
-            div.textContent = text;
-            return div.innerHTML;
-        }
-
-        // Open post modal
-        function openPostModal(post) {
-            document.getElementById('modalImage').src = post.image_url;
-            document.getElementById('modalTitle').textContent = post.title;
-            document.getElementById('modalCategory').textContent = post.category.toUpperCase();
-            document.getElementById('modalDescription').textContent = post.description || 'A beautiful 4K wallpaper ready to enhance your device.';
-            
-            const date = new Date(post.created_at).toLocaleDateString('en-US', {
-                year: 'numeric',
-                month: 'long',
-                day: 'numeric'
-            });
-            document.getElementById('modalDate').textContent = `Added on ${date}`;
-            
-            document.getElementById('postModal').classList.add('active');
-        }
-
-        // Close post modal
-        function closePostModal() {
-            document.getElementById('postModal').classList.remove('active');
-        }
-
-        // Search functionality
-        document.getElementById('searchInput').addEventListener('input', (e) => {
-            const searchTerm = e.target.value.toLowerCase();
-            if (searchTerm === '') {
-                shuffleArray(allPosts);
-                renderPosts(allPosts);
-            } else {
-                const filtered = allPosts.filter(post => 
-                    post.title.toLowerCase().includes(searchTerm) || 
-                    post.category.toLowerCase().includes(searchTerm) ||
-                    (post.description && post.description.toLowerCase().includes(searchTerm))
-                );
-                renderPosts(filtered);
-            }
-        });
-
-        // Page navigation
-        document.querySelectorAll('.nav-link').forEach(link => {
-            link.addEventListener('click', (e) => {
-                e.preventDefault();
-                const page = link.dataset.page;
-                
-                // Update active nav link
-                document.querySelectorAll('.nav-link').forEach(l => l.classList.remove('active'));
-                link.classList.add('active');
-                
-                // Update active page
-                document.querySelectorAll('.page-section').forEach(section => {
-                    section.classList.remove('active');
+                document.querySelectorAll('.post-card').forEach(card => {
+                    card.addEventListener('click', (e) => {
+                        const id = e.currentTarget.getAttribute('data-id');
+                        const wp = this.filteredWallpapers.find(w => w.id === parseInt(id));
+                        if (wp) this.openModal(wp);
+                    });
                 });
-                document.getElementById(page).classList.add('active');
-            });
-        });
-
-        // Close modal when clicking outside
-        document.getElementById('postModal').addEventListener('click', (e) => {
-            if (e.target === document.getElementById('postModal')) {
-                closePostModal();
             }
-        });
 
-        // Initialize
-        initSupabase();
+            createPostCard(wallpaper) {
+                return `
+                    <div class="post-card" data-id="${wallpaper.id}">
+                        <div class="post-image-wrapper">
+                            <img src="${this.escapeHtml(wallpaper.image_url)}" alt="${this.escapeHtml(wallpaper.title)}" class="post-image">
+                            <div class="post-overlay">
+                                <span class="post-overlay-text">${this.escapeHtml(wallpaper.title)}</span>
+                            </div>
+                        </div>
+                        <div class="post-info">
+                            <span class="post-category">${this.escapeHtml(wallpaper.category)}</span>
+                            <h3 class="post-title">${this.escapeHtml(wallpaper.title)}</h3>
+                        </div>
+                    </div>
+                `;
+            }
+
+            handleSearch(query) {
+                query = query.toLowerCase().trim();
+                if (query === '') {
+                    this.filteredWallpapers = [...this.allWallpapers];
+                    this.shuffleArray(this.filteredWallpapers);
+                } else {
+                    this.filteredWallpapers = this.allWallpapers.filter(wp => 
+                        wp.title.toLowerCase().includes(query) ||
+                        wp.category.toLowerCase().includes(query) ||
+                        (wp.description && wp.description.toLowerCase().includes(query))
+                    );
+                }
+                this.renderPosts();
+            }
+
+            openModal(wallpaper) {
+                document.getElementById('modalImage').src = wallpaper.image_url;
+                document.getElementById('modalTitle').textContent = wallpaper.title;
+                document.getElementById('modalCategory').textContent = wallpaper.category.toUpperCase();
+                document.getElementById('modalDescription').textContent = wallpaper.description || 'A beautiful 4K wallpaper';
+                
+                const date = new Date(wallpaper.created_at).toLocaleDateString('en-US', {
+                    year: 'numeric',
+                    month: 'long',
+                    day: 'numeric'
+                });
+                document.getElementById('modalDate').textContent = `Added on ${date}`;
+                
+                document.getElementById('postModal').classList.add('active');
+            }
+
+            closeModal() {
+                document.getElementById('postModal').classList.remove('active');
+            }
+
+            navigateTo(page) {
+                this.currentPage = page;
+
+                document.querySelectorAll('[data-page]').forEach(btn => {
+                    btn.classList.toggle('active', btn.getAttribute('data-page') === page);
+                });
+
+                document.querySelectorAll('.page-section').forEach(section => {
+                    section.classList.toggle('active', section.id === page);
+                });
+            }
+
+            escapeHtml(text) {
+                const div = document.createElement('div');
+                div.textContent = text;
+                return div.innerHTML;
+            }
+        }
+
+        const app = new WallpaperApp();
     </script>
 </body>
 </html>
