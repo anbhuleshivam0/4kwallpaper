@@ -3,10 +3,10 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>4K Wallpaper - Premium HD Wallpapers</title>
+    <title>4K Wallpapers - Premium HD Wallpapers</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.39.0/+esm"></script>
-    <link rel="icon" type="image/png" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 256 256'><rect fill='%23000' width='256' height='256' rx='60'/><text x='128' y='160' font-size='100' font-weight='bold' text-anchor='middle' fill='white'>4</text><circle cx='200' cy='60' r='25' fill='%231e40af'/></svg>">
+    <link rel="icon" type="image/png" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 256 256'%3E%3Crect fill='%23000' width='256' height='256' rx='60'/%3E%3Ctext x='128' y='160' font-size='100' font-weight='bold' text-anchor='middle' fill='white'%3E4%3C/text%3E%3Ccircle cx='200' cy='60' r='25' fill='%231e40af'/%3E%3C/svg%3E">
     <style>
         * {
             margin: 0;
@@ -17,50 +17,111 @@
         body {
             background: #ffffff;
             color: #1f2937;
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
         }
         
-        .falcon-icon {
+        .logo-icon {
+            width: 45px;
+            height: 45px;
             display: inline-block;
-            width: 40px;
-            height: 40px;
-            margin-right: 0.5rem;
-            vertical-align: middle;
         }
 
+        /* Pinterest-style masonry grid */
         .posts-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-            gap: 2rem;
+            column-count: 5;
+            column-gap: 1.5rem;
             padding: 2rem;
+        }
+
+        @media (max-width: 1400px) {
+            .posts-grid {
+                column-count: 4;
+            }
+        }
+        @media (max-width: 1024px) {
+            .posts-grid {
+                column-count: 3;
+            }
+        }
+        @media (max-width: 768px) {
+            .posts-grid {
+                column-count: 2;
+            }
+        }
+        @media (max-width: 512px) {
+            .posts-grid {
+                column-count: 1;
+                padding: 1rem;
+            }
         }
 
         .post-card {
             background: #ffffff;
-            border-radius: 8px;
+            border-radius: 12px;
             overflow: hidden;
             border: 1px solid #e5e7eb;
-            transition: box-shadow 0.3s ease;
-            height: 350px;
+            transition: all 0.3s ease;
+            margin-bottom: 1.5rem;
+            break-inside: avoid;
+            cursor: pointer;
+            position: relative;
+            display: flex;
+            flex-direction: column;
         }
 
         .post-card:hover {
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            box-shadow: 0 12px 40px rgba(0, 0, 0, 0.15);
+            transform: translateY(-4px);
+            border-color: #3b82f6;
+        }
+
+        .post-image-wrapper {
+            position: relative;
+            overflow: hidden;
+            background: #f3f4f6;
+            width: 100%;
+            min-height: 200px;
         }
 
         .post-image {
             width: 100%;
-            height: 240px;
+            height: 100%;
             object-fit: cover;
-            background: #f3f4f6;
+            transition: transform 0.3s ease;
+        }
+
+        .post-card:hover .post-image {
+            transform: scale(1.05);
+        }
+
+        .post-overlay {
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(to bottom, rgba(0,0,0,0) 0%, rgba(0,0,0,0.5) 100%);
+            opacity: 0;
+            transition: opacity 0.3s ease;
+            display: flex;
+            align-items: flex-end;
+            padding: 1rem;
+        }
+
+        .post-card:hover .post-overlay {
+            opacity: 1;
+        }
+
+        .post-title-overlay {
+            color: white;
+            font-weight: 600;
+            font-size: 0.95rem;
+            line-height: 1.4;
         }
 
         .post-info {
             padding: 1rem;
-            height: 110px;
             display: flex;
             flex-direction: column;
-            justify-content: space-between;
+            gap: 0.5rem;
+            flex-grow: 1;
         }
 
         .post-title {
@@ -77,11 +138,18 @@
 
         .post-category {
             font-size: 0.75rem;
-            color: #6b7280;
+            color: #3b82f6;
             text-transform: uppercase;
             letter-spacing: 0.5px;
+            font-weight: 600;
         }
 
+        .post-meta {
+            font-size: 0.75rem;
+            color: #9ca3af;
+        }
+
+        /* Modal Styles */
         .modal {
             display: none;
             position: fixed;
@@ -93,6 +161,7 @@
             z-index: 1000;
             align-items: center;
             justify-content: center;
+            padding: 1rem;
         }
 
         .modal.active {
@@ -103,26 +172,98 @@
             position: relative;
             max-width: 90vw;
             max-height: 90vh;
+            background: white;
+            border-radius: 16px;
+            overflow: hidden;
+            display: grid;
+            grid-template-columns: 1fr 400px;
+            gap: 0;
+        }
+
+        @media (max-width: 1024px) {
+            .modal-content {
+                grid-template-columns: 1fr;
+                max-height: 90vh;
+            }
+        }
+
+        .modal-image-section {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: #f9fafb;
+            position: relative;
+            min-height: 400px;
         }
 
         .modal-image {
             width: 100%;
             height: 100%;
             object-fit: contain;
+            max-height: 80vh;
+        }
+
+        .modal-info-section {
+            padding: 2rem;
+            overflow-y: auto;
+            max-height: 90vh;
+            background: white;
+        }
+
+        .modal-title {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: #1f2937;
+            margin-bottom: 1rem;
+        }
+
+        .modal-category {
+            display: inline-block;
+            background: #eff6ff;
+            color: #3b82f6;
+            padding: 0.5rem 1rem;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            margin-bottom: 1rem;
+        }
+
+        .modal-description {
+            color: #6b7280;
+            line-height: 1.6;
+            margin-bottom: 1.5rem;
+            font-size: 0.95rem;
+        }
+
+        .modal-meta {
+            border-top: 1px solid #e5e7eb;
+            padding-top: 1rem;
+            font-size: 0.85rem;
+            color: #9ca3af;
         }
 
         .close-modal {
             position: absolute;
-            top: -40px;
-            right: 0;
+            top: 1rem;
+            right: 1rem;
+            width: 40px;
+            height: 40px;
+            background: rgba(0, 0, 0, 0.5);
             color: white;
-            font-size: 2rem;
+            border: none;
+            border-radius: 50%;
+            font-size: 1.5rem;
             cursor: pointer;
-            transition: transform 0.2s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.2s;
+            z-index: 10;
         }
 
         .close-modal:hover {
-            transform: scale(1.2);
+            background: rgba(0, 0, 0, 0.8);
+            transform: scale(1.1);
         }
 
         .loading-skeleton {
@@ -140,73 +281,192 @@
             text-align: center;
             padding: 4rem 2rem;
             color: #9ca3af;
+            grid-column: 1 / -1;
         }
 
-        @media (max-width: 768px) {
-            .posts-grid {
-                grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
-                gap: 1rem;
-                padding: 1rem;
-            }
+        /* Navigation */
+        nav a {
+            text-decoration: none;
+            transition: color 0.2s;
+        }
+
+        nav a:hover {
+            color: #3b82f6;
+        }
+
+        nav a.active {
+            color: #3b82f6;
+            font-weight: 600;
+        }
+
+        /* Page sections */
+        .page-section {
+            display: none;
+        }
+
+        .page-section.active {
+            display: block;
         }
     </style>
 </head>
 <body>
     <!-- Header -->
     <header class="bg-white border-b border-gray-200 sticky top-0 z-50">
-        <div class="max-w-7xl mx-auto px-4 py-4 flex items-center justify-between gap-4">
-            <div class="flex items-center gap-2">
-                <svg class="falcon-icon" viewBox="0 0 256 256" xmlns="http://www.w3.org/2000/svg">
+        <div class="max-w-7xl mx-auto px-4 py-4 flex items-center justify-between gap-6">
+            <a href="#home" class="flex items-center gap-3 nav-link" data-page="home">
+                <svg class="logo-icon" viewBox="0 0 256 256" xmlns="http://www.w3.org/2000/svg">
                     <rect fill="#000" width="256" height="256" rx="60"/>
                     <text x="128" y="160" font-size="100" font-weight="bold" text-anchor="middle" fill="white">4</text>
                     <circle cx="200" cy="60" r="25" fill="#1e40af"/>
                 </svg>
                 <h1 class="text-2xl font-bold text-gray-900">4K Wallpapers</h1>
-            </div>
+            </a>
+            
             <div class="flex-1 max-w-md">
-                <input type="text" id="searchInput" placeholder="Search..." 
-                    class="w-full px-4 py-2 border border-gray-300 rounded-lg text-gray-900 placeholder-gray-400 focus:border-gray-500 focus:outline-none transition">
+                <input type="text" id="searchInput" placeholder="Search wallpapers..." 
+                    class="w-full px-4 py-2 border border-gray-300 rounded-lg text-gray-900 placeholder-gray-400 focus:border-blue-500 focus:ring-1 focus:ring-blue-500 focus:outline-none transition">
             </div>
+
+            <nav class="flex items-center gap-6">
+                <a href="#home" data-page="home" class="nav-link active text-gray-900 hover:text-blue-600 font-medium transition">Home</a>
+                <a href="#about" data-page="about" class="nav-link text-gray-600 hover:text-blue-600 font-medium transition">About</a>
+            </nav>
         </div>
     </header>
 
-    <!-- Posts Grid -->
-    <main class="max-w-7xl mx-auto">
+    <!-- Home Page -->
+    <main id="home" class="page-section active">
         <div id="postsGrid" class="posts-grid">
             <!-- Posts will be loaded here -->
-            <div class="post-card loading-skeleton"></div>
-            <div class="post-card loading-skeleton"></div>
-            <div class="post-card loading-skeleton"></div>
+            <div class="post-card loading-skeleton" style="height: 300px;"></div>
+            <div class="post-card loading-skeleton" style="height: 350px;"></div>
+            <div class="post-card loading-skeleton" style="height: 280px;"></div>
+            <div class="post-card loading-skeleton" style="height: 320px;"></div>
+            <div class="post-card loading-skeleton" style="height: 300px;"></div>
         </div>
         <div id="noPosts" class="no-posts" style="display: none;">
             <p class="text-lg">No wallpapers found</p>
         </div>
     </main>
 
-    <!-- Image Viewer Modal -->
-    <div id="imageModal" class="modal">
-        <div class="modal-content">
-            <span class="close-modal" id="closeImageModal">&times;</span>
-            <img id="modalImage" class="modal-image" src="" alt="">
-        </div>
-    </div>
+    <!-- About Page -->
+    <section id="about" class="page-section max-w-4xl mx-auto px-4 py-12">
+        <div class="bg-white rounded-lg border border-gray-200 p-8">
+            <div class="flex items-center gap-4 mb-8">
+                <svg class="logo-icon" viewBox="0 0 256 256" xmlns="http://www.w3.org/2000/svg">
+                    <rect fill="#000" width="256" height="256" rx="60"/>
+                    <text x="128" y="160" font-size="100" font-weight="bold" text-anchor="middle" fill="white">4</text>
+                    <circle cx="200" cy="60" r="25" fill="#1e40af"/>
+                </svg>
+                <h1 class="text-3xl font-bold text-gray-900">About 4K Wallpapers</h1>
+            </div>
 
-    <!-- Footer -->
-    <footer class="bg-gray-50 border-t border-gray-200 mt-16">
-        <div class="max-w-7xl mx-auto px-4 py-8">
-            <div class="flex items-center justify-between mb-6">
-                <div class="flex items-center gap-2">
-                    <svg class="falcon-icon" style="width: 30px; height: 30px;" viewBox="0 0 256 256" xmlns="http://www.w3.org/2000/svg">
-                        <rect fill="#000" width="256" height="256" rx="60"/>
-                        <text x="128" y="160" font-size="100" font-weight="bold" text-anchor="middle" fill="white">4</text>
-                        <circle cx="200" cy="60" r="25" fill="#1e40af"/>
-                    </svg>
-                    <span class="font-semibold text-gray-900">4K Wallpapers</span>
+            <div class="space-y-6 text-gray-700">
+                <p class="text-lg leading-relaxed">
+                    Welcome to <strong>4K Wallpapers</strong>, your premium destination for stunning high-resolution wallpapers. We curate the finest 4K images from around the world to inspire and beautify your devices.
+                </p>
+
+                <div>
+                    <h2 class="text-xl font-bold text-gray-900 mb-3">🎯 Our Mission</h2>
+                    <p>To provide you with the most beautiful, high-quality 4K wallpapers that transform your digital experience. Every image is carefully selected to ensure stunning visual quality.</p>
                 </div>
-                <p class="text-sm text-gray-600">&copy; 2024 All rights reserved</p>
+
+                <div>
+                    <h2 class="text-xl font-bold text-gray-900 mb-3">✨ Features</h2>
+                    <ul class="list-disc list-inside space-y-2">
+                        <li>📸 Premium 4K Resolution (3840x2160 and higher)</li>
+                        <li>🎨 Diverse Categories: Nature, Abstract, Space, Urban & more</li>
+                        <li>🔍 Intelligent Search & Filtering</li>
+                        <li>📱 Optimized for all devices and screen sizes</li>
+                        <li>⚡ Fast loading and performance</li>
+                        <li>💾 Easy to download and use</li>
+                    </ul>
+                </div>
+
+                <div>
+                    <h2 class="text-xl font-bold text-gray-900 mb-3">📚 Setup Guide</h2>
+                    <p class="mb-4">Follow these steps to set up your own 4K Wallpapers website with Supabase:</p>
+                    
+                    <div class="bg-gray-50 border border-gray-200 rounded-lg p-6 space-y-4">
+                        <div>
+                            <h3 class="font-bold text-gray-900 mb-2">Step 1: Create Supabase Project</h3>
+                            <ol class="list-decimal list-inside space-y-1 text-sm text-gray-600">
+                                <li>Go to <a href="https://supabase.com" target="_blank" class="text-blue-600 hover:underline">supabase.com</a></li>
+                                <li>Sign up and create a new project</li>
+                                <li>Choose your region and wait for the project to initialize</li>
+                            </ol>
+                        </div>
+
+                        <div>
+                            <h3 class="font-bold text-gray-900 mb-2">Step 2: Create Database Table</h3>
+                            <ol class="list-decimal list-inside space-y-1 text-sm text-gray-600">
+                                <li>Open your Supabase project dashboard</li>
+                                <li>Click <strong>SQL Editor</strong> in the left menu</li>
+                                <li>Click <strong>New Query</strong></li>
+                                <li>Copy & paste the SQL from <code class="bg-white px-2 py-1 rounded border border-gray-300">setup.sql</code> file</li>
+                                <li>Click <strong>Run</strong> to execute</li>
+                            </ol>
+                        </div>
+
+                        <div>
+                            <h3 class="font-bold text-gray-900 mb-2">Step 3: Get Your Credentials</h3>
+                            <ol class="list-decimal list-inside space-y-1 text-sm text-gray-600">
+                                <li>In Supabase dashboard, click <strong>Settings</strong> → <strong>API</strong></li>
+                                <li>Copy your <strong>Project URL</strong></li>
+                                <li>Copy your <strong>Anon Key</strong> (public key)</li>
+                            </ol>
+                        </div>
+
+                        <div>
+                            <h3 class="font-bold text-gray-900 mb-2">Step 4: Add Wallpapers</h3>
+                            <ol class="list-decimal list-inside space-y-1 text-sm text-gray-600">
+                                <li>Go to Supabase <strong>Table Editor</strong></li>
+                                <li>Open the <strong>wallpapers</strong> table</li>
+                                <li>Click <strong>Insert Row</strong></li>
+                                <li>Fill in: title, image_url, category, description</li>
+                                <li>Image URLs work from: Unsplash, Pexels, Pinterest, Pixabay</li>
+                            </ol>
+                        </div>
+
+                        <div>
+                            <h3 class="font-bold text-gray-900 mb-2">Step 5: Deploy to GitHub Pages</h3>
+                            <ol class="list-decimal list-inside space-y-1 text-sm text-gray-600">
+                                <li>Push all files to GitHub repository</li>
+                                <li>Go to repo <strong>Settings</strong> → <strong>Pages</strong></li>
+                                <li>Select <strong>main</strong> branch as source</li>
+                                <li>Your site is live! 🚀</li>
+                            </ol>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="bg-blue-50 border border-blue-200 rounded-lg p-4">
+                    <p class="text-sm text-blue-900"><strong>💡 Tip:</strong> For best results, use high-quality image URLs (3840x2160 or higher). You can find great wallpapers on Unsplash, Pexels, or Pinterest!</p>
+                </div>
             </div>
         </div>
-    </footer>
+    </section>
+
+    <!-- Post Modal -->
+    <div id="postModal" class="modal">
+        <div class="modal-content">
+            <button class="close-modal" onclick="closePostModal()">&times;</button>
+            
+            <div class="modal-image-section">
+                <img id="modalImage" class="modal-image" src="" alt="">
+            </div>
+            
+            <div class="modal-info-section">
+                <div class="modal-category" id="modalCategory"></div>
+                <h2 class="modal-title" id="modalTitle"></h2>
+                <p class="modal-description" id="modalDescription"></p>
+                
+                <div class="modal-meta">
+                    <p id="modalDate"></p>
+                </div>
+            </div>
+        </div>
+    </div>
 
     <script>
         // Supabase Configuration
@@ -239,9 +499,19 @@
                 }
                 
                 allPosts = data || [];
+                // Shuffle for Pinterest-like algorithm
+                shuffleArray(allPosts);
                 renderPosts(allPosts);
             } catch (err) {
                 console.error('Error:', err);
+            }
+        }
+
+        // Fisher-Yates shuffle (Pinterest-style algorithm)
+        function shuffleArray(array) {
+            for (let i = array.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [array[i], array[j]] = [array[j], array[i]];
             }
         }
 
@@ -258,12 +528,18 @@
             
             noPosts.style.display = 'none';
             grid.innerHTML = posts.map(post => `
-                <div class="post-card cursor-pointer" onclick="openImageModal('${post.image_url}', '${escapeHtml(post.title)}')">
-                    <img src="${post.image_url}" alt="${post.title}" class="post-image" onerror="this.src='data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 400 300%22%3E%3Crect fill=%22%23f3f4f6%22 width=%22400%22 height=%22300%22/%3E%3C/svg%3E'">
+                <div class="post-card" onclick="openPostModal(${JSON.stringify(post).replace(/"/g, '&quot;')})">
+                    <div class="post-image-wrapper">
+                        <img src="${post.image_url}" alt="${escapeHtml(post.title)}" class="post-image" 
+                            onerror="this.src='data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 400 300%22%3E%3Crect fill=%22%23f3f4f6%22 width=%22400%22 height=%22300%22/%3E%3C/svg%3E'">
+                        <div class="post-overlay">
+                            <p class="post-title-overlay">${escapeHtml(post.title)}</p>
+                        </div>
+                    </div>
                     <div class="post-info">
                         <div>
-                            <p class="post-title">${escapeHtml(post.title)}</p>
                             <p class="post-category">${escapeHtml(post.category)}</p>
+                            <p class="post-title">${escapeHtml(post.title)}</p>
                         </div>
                     </div>
                 </div>
@@ -277,33 +553,66 @@
             return div.innerHTML;
         }
 
+        // Open post modal
+        function openPostModal(post) {
+            document.getElementById('modalImage').src = post.image_url;
+            document.getElementById('modalTitle').textContent = post.title;
+            document.getElementById('modalCategory').textContent = post.category.toUpperCase();
+            document.getElementById('modalDescription').textContent = post.description || 'A beautiful 4K wallpaper ready to enhance your device.';
+            
+            const date = new Date(post.created_at).toLocaleDateString('en-US', {
+                year: 'numeric',
+                month: 'long',
+                day: 'numeric'
+            });
+            document.getElementById('modalDate').textContent = `Added on ${date}`;
+            
+            document.getElementById('postModal').classList.add('active');
+        }
+
+        // Close post modal
+        function closePostModal() {
+            document.getElementById('postModal').classList.remove('active');
+        }
+
         // Search functionality
         document.getElementById('searchInput').addEventListener('input', (e) => {
             const searchTerm = e.target.value.toLowerCase();
-            const filtered = allPosts.filter(post => 
-                post.title.toLowerCase().includes(searchTerm) || 
-                post.category.toLowerCase().includes(searchTerm)
-            );
-            renderPosts(filtered);
+            if (searchTerm === '') {
+                shuffleArray(allPosts);
+                renderPosts(allPosts);
+            } else {
+                const filtered = allPosts.filter(post => 
+                    post.title.toLowerCase().includes(searchTerm) || 
+                    post.category.toLowerCase().includes(searchTerm) ||
+                    (post.description && post.description.toLowerCase().includes(searchTerm))
+                );
+                renderPosts(filtered);
+            }
         });
 
-        // Modal functions
-        function openImageModal(imageUrl, title) {
-            document.getElementById('modalImage').src = imageUrl;
-            document.getElementById('imageModal').classList.add('active');
-        }
-
-        function closeModal(modalId) {
-            document.getElementById(modalId).classList.remove('active');
-        }
-
-        document.getElementById('closeImageModal').addEventListener('click', () => {
-            closeModal('imageModal');
+        // Page navigation
+        document.querySelectorAll('.nav-link').forEach(link => {
+            link.addEventListener('click', (e) => {
+                e.preventDefault();
+                const page = link.dataset.page;
+                
+                // Update active nav link
+                document.querySelectorAll('.nav-link').forEach(l => l.classList.remove('active'));
+                link.classList.add('active');
+                
+                // Update active page
+                document.querySelectorAll('.page-section').forEach(section => {
+                    section.classList.remove('active');
+                });
+                document.getElementById(page).classList.add('active');
+            });
         });
 
-        document.getElementById('imageModal').addEventListener('click', (e) => {
-            if (e.target === document.getElementById('imageModal')) {
-                closeModal('imageModal');
+        // Close modal when clicking outside
+        document.getElementById('postModal').addEventListener('click', (e) => {
+            if (e.target === document.getElementById('postModal')) {
+                closePostModal();
             }
         });
 
